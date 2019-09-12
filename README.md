@@ -4,6 +4,7 @@ System panel for a clinic giving two access modes: admin (typical administration
 ## table of contents
 * [Introduction](#introduction)
 * [How it should work](#how-it-should-work)
+* [System interface design](#system-interface-design)
 
 <p></p>
 
@@ -42,3 +43,10 @@ System panel for a clinic giving two access modes: admin (typical administration
 At least, this is what I could think of for now.
 
 <p></p>
+
+## System interface design
+access modes should go like this
+
+<p align="center">
+  <img width="600" height="800" src="https://github.com/AlphaArslan/Clinic-Management-simulation-in-C/blob/master/imgs/system_interface.png">
+</p>
