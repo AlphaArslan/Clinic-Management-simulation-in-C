@@ -15,18 +15,24 @@
 #define     MAX_NUM         100
 #define     MAX_NAME        100
 #define     NULL_NAME       "NULL"
+#define     SLOTS_NUM       5
+#define     FREE_SLOT       -1
 
 /************************** STRUCTS ***************************/
 typedef struct pat{
-  char      name[MAX_NAME] ;
-  uint8_t   age ;
-  char      gender ;
+    char      name[MAX_NAME] ;
+    uint8_t   age ;
+    char      gender ;
 }patient;
 
 typedef struct pat_rec{
-  patient* patients[MAX_NUM];
-  int      top ;
+    patient* patients[MAX_NUM];
+    int      top ;
 }patient_record;
+
+typedef struct rsvs{
+    int slots[SLOTS_NUM];
+}reservations;
 
 
 /********************** FUNC. PROTOTYPES **********************/
@@ -48,28 +54,26 @@ void     delete_patient_record_by_ID(patient_record*, int);
 void     view_patient_record_by_ID(patient_record*, int);
 bool     is_null_by_ID(patient_record*, int);
 
-void view_reservations(void);
-void reserve_slot(void);
-void cancel_reserve(void);
+void     init_reservations(reservations*);
+void     view_reservations(reservations*);
+bool     is_free_by_ID(reservations*, int);
+void     reserve_slot(reservations*, int, int);
+void     cancel_reserve(reservations*, int);
 
 /*************************** GLOBAL ***************************/
-patient_record clinic_record;
-
+patient_record  clinic_record;
+reservations    clinic_reservations;
 
 
 /**************************** MAIN ****************************/
 int main()
 {
     init_record(&clinic_record);
+    init_reservations(&clinic_reservations);
 
     // admin, user or exit
     while(system_panel());
 
-
-
-    view_reservations();
-    reserve_slot();
-    cancel_reserve();
     return 0;
 
 }
@@ -145,7 +149,7 @@ char ask_for_password(void){
 
 char admin_panel(){
     uint8_t select;
-    int ID ;
+    int i, ID ;
 
     printf("\n\n");
     printf("what do you want to do ? \n");
@@ -153,11 +157,12 @@ char admin_panel(){
     printf("2: Add new patient record \n");
     printf("3: Edit patient record \n");
     printf("4: Delete patient record \n");
-    printf("5: Reserve a slot with the doctor \n");
-    printf("6: Cancel reservation \n");
-    printf("7: Log out \n");
+    printf("5: View reservation\n");
+    printf("6: Reserve a slot with the doctor \n");
+    printf("7: Cancel reservation \n");
+    printf("8: Log out \n");
 
-    printf("select[1~7]: ");
+    printf("select[1~8]: ");
     fflush(stdin);
     scanf("%d", &select);
     printf("\n\n");
@@ -186,14 +191,27 @@ char admin_panel(){
             break;
 
         case 5:
-            reserve_slot();
+            view_reservations(&clinic_reservations);
             break;
 
         case 6:
-            cancel_reserve();
+            printf("Enter slot index: ");
+            fflush(stdin);
+            scanf("%d", &i);
+            printf("Enter patient ID: ");
+            fflush(stdin);
+            scanf("%d", &ID);
+            reserve_slot(&clinic_reservations, i, ID);
             break;
 
         case 7:
+            printf("Enter slot index: ");
+            fflush(stdin);
+            scanf("%d", &i);
+            cancel_reserve(&clinic_reservations, i);
+            break;
+
+        case 8:
             return 0;       // exit indication
 
         default:
@@ -228,7 +246,7 @@ char user_panel(void){
             break;
 
         case 2:
-            view_reservations();
+            view_reservations(&clinic_reservations);
             break;
 
         case 3:
@@ -314,15 +332,38 @@ bool is_null_by_ID(patient_record *record, int ID){
 }
 
 
-
-void view_reservations(void){
-    printf("viewing reservations \n");
+void init_reservations(reservations *rsv){
+    int i;
+    for(i=0; i<SLOTS_NUM; i++){
+        rsv->slots[i] = FREE_SLOT ;
+    }
 }
 
-void reserve_slot(void){
+
+void view_reservations(reservations *rsv){
+    printf("\n\n");
+    int i;
+    for(i=0; i<SLOTS_NUM; i++){
+        printf("Slot %d:", i);
+        if(is_free_by_ID(rsv, i)) printf("Free \n");
+        else printf("Reserved for patient ID %d \n", rsv->slots[i]);
+    }
+}
+
+bool is_free_by_ID(reservations *rsv, int i){
+    return rsv->slots[i] == FREE_SLOT;
+}
+
+void reserve_slot(reservations *rsv, int i, int ID){
+    if(!is_free_by_ID(rsv, i)){
+        printf("Slor is already reserved for patient ID %d \n", rsv->slots[i] );
+        return;
+    }
+    rsv->slots[i] = ID;
     printf("slot reserved \n");
 }
 
-void cancel_reserve(void){
+void cancel_reserve(reservations *rsv, int i){
+    rsv->slots[i] = FREE_SLOT;
     printf("reservation cancelled \n");
 }
