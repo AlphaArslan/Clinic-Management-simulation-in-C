@@ -130,7 +130,7 @@ char user_mode(void){
     // show user what he can do
     // and wait until he chooeses to EXIT
     while(user_panel());
-
+    return 0;
 }
 
 

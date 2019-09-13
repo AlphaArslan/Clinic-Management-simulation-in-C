@@ -5,6 +5,7 @@ System panel for a clinic giving two access modes: admin (typical administration
 * [Introduction](#introduction)
 * [How it should work](#how-it-should-work)
 * [System interface design](#system-interface-design)
+* [System interface implementation](#System-interface-implementation)
 
 <p></p>
 
@@ -50,3 +51,45 @@ access modes should go like this
 <p align="center">
   <img width="600" height="800" src="https://github.com/AlphaArslan/Clinic-Management-simulation-in-C/blob/master/imgs/system_interface.png">
 </p>
+
+## System interface implementation
+this is the first layer in our program
+* __int main()__
+  * initializes *record structure*
+  * initializes *reservations structure*
+  * keeps calling __system_panel()__ until it returns __0__
+  * then returns __0__
+
+* __char system_panel(void)__
+  * choose between:
+    * __Admin Mode__ [calls __admin_mode()__]
+    * __User Mode__  [calls __user_mode()__]
+    * __Exit__
+  * returns:
+    * __0__ on __Exit__
+    * __1__ otherwise
+
+* __char admin_mode(void)__
+  * checks for the password from admin [calls __ask_for_password()__]
+    * if __right__:
+      * keeps calling __admin_panel()__ until the last returns __0__
+      * then returns __0__
+    * if __wrong__, returns __1__
+
+* __char user_mode(void)__
+  * keeps calling __user_panel()__ until the last returns __0__
+  * then returns __0__
+
+* __char ask_for_password(void)__
+  * returns __0__ on __3 failed login attempts__
+  * returns __1__ on __successful login__
+
+* __char admin_panel(void)__
+  * shows what an admin can do
+  * returns __0__ on __Log out__
+  * returns __1__ otherwise
+
+* __char user_panel(void)__
+  * shows what a user can do
+  * returns __0__ on __Log out__
+  * returns __1__ otherwise
